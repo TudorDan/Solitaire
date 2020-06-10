@@ -41,6 +41,15 @@ public class Game extends Pane {
             card.flip();
             card.setMouseTransparent(false);
             System.out.println("Placed " + card + " to the waste.");
+
+            //If the Stock becomes empty, turn the entire discard pile over and make it the new Stock.
+            if (stockPile.isEmpty() && !discardPile.isEmpty() && discardPile.numOfCards() > 1) {
+                while (!discardPile.isEmpty()) {
+                    card = discardPile.getTopCard();
+                    card.flip();
+                    card.moveToPile(stockPile);
+                }
+            }
         }
     };
 
