@@ -92,7 +92,7 @@ public class Game extends Pane {
             return;
         Card card = (Card) e.getSource();
         Pile pile = getValidIntersectingPile(card, tableauPiles);
-        //TODO
+        //TODO = handle foundation destination
         if (pile != null) {
             handleValidMove(card, pile);
         } else {
@@ -132,8 +132,13 @@ public class Game extends Pane {
     }
 
     public boolean isMoveValid(Card card, Pile destPile) {
-        //TODO
-        return true;
+        if (destPile.isEmpty())
+            return card.getRank() == Rank.KING;
+        else {
+            Card topcard = destPile.getTopCard();
+            return !card.getSuit().getColor().equals(topcard.getSuit().getColor()) &&
+                    card.getRank().ordinal() + 1 == topcard.getRank().ordinal();
+        }
     }
 
     private Pile getValidIntersectingPile(Card card, List<Pile> piles) {
@@ -164,11 +169,10 @@ public class Game extends Pane {
         } else {
             msg = String.format("Placed %s to %s.", card, destPile.getTopCard());
         }
+
         System.out.println(msg);
         MouseUtil.slideToDest(draggedCards, destPile);
-        if (draggedCards != null) {
-            draggedCards.clear();
-        }
+        draggedCards = null;
     }
 
 
