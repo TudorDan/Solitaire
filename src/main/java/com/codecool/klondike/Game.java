@@ -114,6 +114,7 @@ public class Game extends Pane {
         //TODO
         return true;
     }
+
     private Pile getValidIntersectingPile(Card card, List<Pile> piles) {
         Pile result = null;
         for (Pile pile : piles) {
@@ -182,7 +183,21 @@ public class Game extends Pane {
 
     public void dealCards() {
         Iterator<Card> deckIterator = deck.iterator();
-        //TODO
+
+        //deal cards  to initial tableauPiles
+        int numberOfCards = 0;
+        for (Pile pile : tableauPiles) {
+            numberOfCards++;
+            for (int i = 1; i <= numberOfCards; i++) {
+                Card card = deckIterator.next();
+                pile.addCard(card);
+                addMouseEventHandlers(card);
+                getChildren().add(card);
+            }
+            pile.getTopCard().flip();
+        }
+
+        //deal remaining cards to stockPile
         deckIterator.forEachRemaining(card -> {
             stockPile.addCard(card);
             addMouseEventHandlers(card);
