@@ -42,14 +42,6 @@ public class Game extends Pane {
             card.setMouseTransparent(false);
             System.out.println("Placed " + card + " to the waste.");
 
-            //If the Stock becomes empty, turn the entire discard pile over and make it the new Stock.
-            if (stockPile.isEmpty() && !discardPile.isEmpty() && discardPile.numOfCards() > 1) {
-                while (!discardPile.isEmpty()) {
-                    card = discardPile.getTopCard();
-                    card.flip();
-                    card.moveToPile(stockPile);
-                }
-            }
         }
     };
 
@@ -67,11 +59,17 @@ public class Game extends Pane {
         Pile activePile = card.getContainingPile();
         if (activePile.getPileType() == Pile.PileType.STOCK)
             return;
+        if (activePile.getPileType() == Pile.PileType.FOUNDATION)
+            return;
+        if (card.isFaceDown())
+            return;
         double offsetX = e.getSceneX() - dragStartX;
         double offsetY = e.getSceneY() - dragStartY;
 
-        draggedCards.clear();
-        draggedCards.add(card);
+        if (draggedCards != null) {
+            draggedCards.clear();
+            draggedCards.add(card);
+        }
 
         card.getDropShadow().setRadius(20);
         card.getDropShadow().setOffsetX(10);
@@ -83,7 +81,7 @@ public class Game extends Pane {
     };
 
     private EventHandler<MouseEvent> onMouseReleasedHandler = e -> {
-        if (draggedCards.isEmpty())
+        if (draggedCards != null && draggedCards.isEmpty())
             return;
         Card card = (Card) e.getSource();
         Pile pile = getValidIntersectingPile(card, tableauPiles);
@@ -91,7 +89,9 @@ public class Game extends Pane {
         if (pile != null) {
             handleValidMove(card, pile);
         } else {
-            draggedCards.forEach(MouseUtil::slideBack);
+            if (draggedCards != null) {
+                draggedCards.forEach(MouseUtil::slideBack);
+            }
             draggedCards = null;
         }
     };
@@ -115,7 +115,12 @@ public class Game extends Pane {
     }
 
     public void refillStockFromDiscard() {
-        //TODO
+        //If the Stock becomes empty, turn the entire discard pile over and make it the new Stock.
+        while (!discardPile.isEmpty()) {
+            Card card = discardPile.getTopCard();
+            card.flip();
+            card.moveToPile(stockPile);
+        }
         System.out.println("Stock refilled from discard pile.");
     }
 
@@ -154,7 +159,9 @@ public class Game extends Pane {
         }
         System.out.println(msg);
         MouseUtil.slideToDest(draggedCards, destPile);
-        draggedCards.clear();
+        if (draggedCards != null) {
+            draggedCards.clear();
+        }
     }
 
 
