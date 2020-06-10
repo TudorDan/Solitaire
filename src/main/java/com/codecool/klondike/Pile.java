@@ -86,6 +86,16 @@ public class Pile extends Pane {
         setEffect(gaussianBlur);
     }
 
+    public int getIndexOfCard(Card card) {
+        return cards.indexOf(card);
+    }
+
+    public Card getCard(int index) {
+        if (index < 0 || index > cards.size() - 1)
+            return null;
+        return cards.get(index);
+    }
+
     public enum PileType {
         STOCK,
         DISCARD,

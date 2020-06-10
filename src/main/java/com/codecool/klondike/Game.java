@@ -57,27 +57,34 @@ public class Game extends Pane {
     private EventHandler<MouseEvent> onMouseDraggedHandler = e -> {
         Card card = (Card) e.getSource();
         Pile activePile = card.getContainingPile();
+
         if (activePile.getPileType() == Pile.PileType.STOCK)
             return;
         if (activePile.getPileType() == Pile.PileType.FOUNDATION)
             return;
         if (card.isFaceDown())
             return;
+
         double offsetX = e.getSceneX() - dragStartX;
         double offsetY = e.getSceneY() - dragStartY;
 
-        if (draggedCards != null) {
-            draggedCards.clear();
-            draggedCards.add(card);
+        //create list of dragged cards
+        draggedCards = FXCollections.observableArrayList();
+        int indexOfCard = activePile.getIndexOfCard(card);
+        for (int i = indexOfCard; i < activePile.numOfCards(); i++) {
+            draggedCards.add(activePile.getCard(i));
         }
 
-        card.getDropShadow().setRadius(20);
-        card.getDropShadow().setOffsetX(10);
-        card.getDropShadow().setOffsetY(10);
+        //move on screen all dragged cards
+        for (Card cd : draggedCards) {
+            cd.getDropShadow().setRadius(20);
+            cd.getDropShadow().setOffsetX(10);
+            cd.getDropShadow().setOffsetY(10);
 
-        card.toFront();
-        card.setTranslateX(offsetX);
-        card.setTranslateY(offsetY);
+            cd.toFront();
+            cd.setTranslateX(offsetX);
+            cd.setTranslateY(offsetY);
+        }
     };
 
     private EventHandler<MouseEvent> onMouseReleasedHandler = e -> {
