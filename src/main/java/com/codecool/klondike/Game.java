@@ -19,7 +19,7 @@ import java.util.List;
 
 public class Game extends Pane {
 
-    private List<Card> deck = new ArrayList<>();
+    private List<Card> deck;
 
     private Pile stockPile;
     private Pile discardPile;
@@ -188,7 +188,6 @@ public class Game extends Pane {
             addMouseEventHandlers(card);
             getChildren().add(card);
         });
-
     }
 
     public void setTableBackground(Image tableBackground) {
