@@ -33,6 +33,7 @@ public class Game extends Pane {
     private static double STOCK_GAP = 1;
     private static double FOUNDATION_GAP = 0;
     private static double TABLEAU_GAP = 30;
+    private static int victoryCounter = 0;
 
 
     private EventHandler<MouseEvent> onMouseClickedHandler = e -> {
@@ -137,6 +138,10 @@ public class Game extends Pane {
                 draggedCards = null;
             } else {
                 handleValidMove(card, pile);
+                victoryCounter++;
+                if (isGameWon()) {
+//                    SHOW POPUP
+                }
             }
         } else {
             if (draggedCards != null) {
@@ -147,8 +152,7 @@ public class Game extends Pane {
     };
 
     public boolean isGameWon() {
-        //TODO
-        return false;
+        return victoryCounter == 52;
     }
 
     public Game() {
