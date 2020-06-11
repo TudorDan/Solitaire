@@ -5,6 +5,7 @@ import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
@@ -36,14 +37,45 @@ public class Game extends Pane {
 
     private EventHandler<MouseEvent> onMouseClickedHandler = e -> {
         Card card = (Card) e.getSource();
-        if (card.getContainingPile().getPileType() == Pile.PileType.STOCK) {
+        Pile currentPile = card.getContainingPile();
+
+//      If click event occurs on the Stock Pile, just move the top card onto discard pile
+        if (currentPile.getPileType() == Pile.PileType.STOCK) {
             card.moveToPile(discardPile);
             card.flip();
             card.setMouseTransparent(false);
-            System.out.println("Placed " + card + " to the waste.");
-
+//       else detect double click on other piles; if click, do nothing; if double click find a suitable pile for the double clicked card
+        } else {
+            if (e.getButton().equals(MouseButton.PRIMARY) && e.getClickCount() == 2) {
+                autoMoveCard(card, currentPile);
+            }
         }
     };
+
+    private void autoMoveCard(Card card, Pile currentPile) {
+        if (currentPile.getPileType() == Pile.PileType.TABLEAU || currentPile.getPileType() == Pile.PileType.DISCARD) {
+            Pile validPile = findValidAutoMovePile(card, currentPile);
+            if (validPile != null) {
+                card.moveToPile(validPile);
+            }
+        }
+    }
+
+    private Pile findValidAutoMovePile(Card card, Pile currentPile) {
+        for (Pile fPile : foundationPiles) {
+            if (isMoveValid(card, fPile) && card == currentPile.getTopCard()) {
+                return fPile;
+            }
+        }
+
+        for (Pile tPile : tableauPiles) {
+            if (isMoveValid(card, tPile) && card == currentPile.getTopCard()) {
+                return tPile;
+            }
+        }
+
+        return null;
+    }
 
     private EventHandler<MouseEvent> stockReverseCardsHandler = e -> {
         refillStockFromDiscard();
@@ -91,15 +123,6 @@ public class Game extends Pane {
         if (draggedCards == null)
             return;
         Card card = (Card) e.getSource();
-
-//        Pile pile = ;
-//        if (pile.getPileType() == Pile.PileType.FOUNDATION) {
-//            pile = getValidIntersectingPile(card, foundationPiles);
-//        } else if(pile.getPileType() == Pile.PileType.TABLEAU) {
-//            pile = getValidIntersectingPile(card, tableauPiles);
-//        }
-
-
         Pile pile = getValidIntersectingPile(card, tableauPiles);
 
         //TODO = handle foundation destination
@@ -139,6 +162,7 @@ public class Game extends Pane {
         card.setOnMouseDragged(onMouseDraggedHandler);
         card.setOnMouseReleased(onMouseReleasedHandler);
         card.setOnMouseClicked(onMouseClickedHandler);
+
     }
 
     public void refillStockFromDiscard() {
