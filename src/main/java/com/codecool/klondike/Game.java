@@ -91,9 +91,21 @@ public class Game extends Pane {
         if (draggedCards == null)
             return;
         Card card = (Card) e.getSource();
+
+//        Pile pile = ;
+//        if (pile.getPileType() == Pile.PileType.FOUNDATION) {
+//            pile = getValidIntersectingPile(card, foundationPiles);
+//        } else if(pile.getPileType() == Pile.PileType.TABLEAU) {
+//            pile = getValidIntersectingPile(card, tableauPiles);
+//        }
+
+
         Pile pile = getValidIntersectingPile(card, tableauPiles);
         //TODO = handle foundation destination
         if (pile != null) {
+            handleValidMove(card, pile);
+        } else if (pile == null) {
+            pile = getValidIntersectingPile(card, foundationPiles);
             handleValidMove(card, pile);
         } else {
             if (draggedCards != null) {
@@ -101,14 +113,6 @@ public class Game extends Pane {
             }
             draggedCards = null;
         }
-
-        // auto flipping
-//        for (Pile p : tableauPiles) {
-//            System.out.println(p.getTopCard().toString());
-//            if (!p.isEmpty() && p.getTopCard().isFaceDown()) {
-//                p.getTopCard().flip();
-//            }
-//        }
     };
 
     public boolean isGameWon() {
@@ -140,13 +144,25 @@ public class Game extends Pane {
     }
 
     public boolean isMoveValid(Card card, Pile destPile) {
-        if (destPile.isEmpty())
-            return card.getRank() == Rank.KING;
-        else {
-            Card topcard = destPile.getTopCard();
-            return !card.getSuit().getColor().equals(topcard.getSuit().getColor()) &&
-                    card.getRank().ordinal() + 1 == topcard.getRank().ordinal();
+        if (destPile.getPileType() == Pile.PileType.TABLEAU) {
+            if (destPile.isEmpty())
+                return card.getRank() == Rank.KING;
+            else {
+                Card topcard = destPile.getTopCard();
+                return !card.getSuit().getColor().equals(topcard.getSuit().getColor()) &&
+                        card.getRank().ordinal() + 1 == topcard.getRank().ordinal();
+            }
         }
+        if (destPile.getPileType() == Pile.PileType.FOUNDATION) {
+            if (destPile.isEmpty())
+                return card.getRank() == Rank.ACE;
+            else {
+                Card topcard = destPile.getTopCard();
+                return card.getSuit().getColor().equals(topcard.getSuit().getColor()) &&
+                        card.getRank().ordinal() + 1 == topcard.getRank().ordinal();
+            }
+        }
+        return false;
     }
 
     private Pile getValidIntersectingPile(Card card, List<Pile> piles) {
