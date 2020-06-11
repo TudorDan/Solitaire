@@ -101,12 +101,20 @@ public class Game extends Pane {
 
 
         Pile pile = getValidIntersectingPile(card, tableauPiles);
+
         //TODO = handle foundation destination
         if (pile != null) {
             handleValidMove(card, pile);
         } else if (pile == null) {
             pile = getValidIntersectingPile(card, foundationPiles);
-            handleValidMove(card, pile);
+            if (pile == null) {
+                if (draggedCards != null) {
+                    draggedCards.forEach(MouseUtil::slideBack);
+                }
+                draggedCards = null;
+            } else {
+                handleValidMove(card, pile);
+            }
         } else {
             if (draggedCards != null) {
                 draggedCards.forEach(MouseUtil::slideBack);
@@ -159,7 +167,7 @@ public class Game extends Pane {
             else {
                 Card topcard = destPile.getTopCard();
                 return card.getSuit().getColor().equals(topcard.getSuit().getColor()) &&
-                        card.getRank().ordinal() + 1 == topcard.getRank().ordinal();
+                        card.getRank().ordinal() - 1 == topcard.getRank().ordinal();
             }
         }
         return false;
