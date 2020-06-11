@@ -166,7 +166,7 @@ public class Game extends Pane {
                 return card.getRank() == Rank.ACE;
             else {
                 Card topcard = destPile.getTopCard();
-                return card.getSuit().getColor().equals(topcard.getSuit().getColor()) &&
+                return card.getSuit().getName().equals(topcard.getSuit().getName()) &&
                         card.getRank().ordinal() - 1 == topcard.getRank().ordinal();
             }
         }
