@@ -96,6 +96,10 @@ public class Pile extends Pane {
         return cards.get(index);
     }
 
+    public void removeCard(Card card) {
+        cards.remove(card);
+    }
+
     public enum PileType {
         STOCK,
         DISCARD,

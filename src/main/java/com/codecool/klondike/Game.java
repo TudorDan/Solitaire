@@ -88,7 +88,7 @@ public class Game extends Pane {
     };
 
     private EventHandler<MouseEvent> onMouseReleasedHandler = e -> {
-        if (draggedCards != null && draggedCards.isEmpty())
+        if (draggedCards == null)
             return;
         Card card = (Card) e.getSource();
         Pile pile = getValidIntersectingPile(card, tableauPiles);
@@ -101,6 +101,14 @@ public class Game extends Pane {
             }
             draggedCards = null;
         }
+
+        // auto flipping
+//        for (Pile p : tableauPiles) {
+//            System.out.println(p.getTopCard().toString());
+//            if (!p.isEmpty() && p.getTopCard().isFaceDown()) {
+//                p.getTopCard().flip();
+//            }
+//        }
     };
 
     public boolean isGameWon() {
@@ -171,6 +179,7 @@ public class Game extends Pane {
         }
 
         System.out.println(msg);
+
         MouseUtil.slideToDest(draggedCards, destPile);
         draggedCards = null;
     }
