@@ -1,20 +1,24 @@
 package com.codecool.klondike;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
+import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -30,10 +34,12 @@ public class Game extends Pane {
     private double dragStartX, dragStartY;
     private List<Card> draggedCards = FXCollections.observableArrayList();
 
-    private static double STOCK_GAP = 1;
+    private static double STOCK_GAP = 2;
     private static double FOUNDATION_GAP = 0;
     private static double TABLEAU_GAP = 30;
     private static int victoryCounter = 0;
+
+    private static Stage stage = null;
 
 
     private EventHandler<MouseEvent> onMouseClickedHandler = e -> {
@@ -58,6 +64,12 @@ public class Game extends Pane {
             Pile validPile = findValidAutoMovePile(card, currentPile);
             if (validPile != null) {
                 card.moveToPile(validPile);
+                if (validPile.getPileType() == Pile.PileType.FOUNDATION) {
+                    victoryCounter++;
+                    if (isGameWon()) {
+                        showGameWonDialog();
+                    }
+                }
             }
         }
     }
@@ -126,7 +138,6 @@ public class Game extends Pane {
         Card card = (Card) e.getSource();
         Pile pile = getValidIntersectingPile(card, tableauPiles);
 
-        //TODO = handle foundation destination
         if (pile != null) {
             handleValidMove(card, pile);
         } else if (pile == null) {
@@ -139,8 +150,9 @@ public class Game extends Pane {
             } else {
                 handleValidMove(card, pile);
                 victoryCounter++;
+
                 if (isGameWon()) {
-//                    SHOW POPUP
+                    showGameWonDialog();
                 }
             }
         } else {
@@ -151,14 +163,83 @@ public class Game extends Pane {
         }
     };
 
-    public boolean isGameWon() {
-        return victoryCounter == 52;
+    private void showGameWonDialog() {
+        final Stage dialog = new Stage();
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.initOwner(stage);
+
+        VBox dialogVbox = new VBox(20);
+        dialogVbox.getChildren().add(new Text("YOU WON THE GAME!"));
+
+        Button restartButton = new Button("RESTART");
+        restartButton.setLayoutY(100);
+        restartButton.setLayoutX(100);
+        restartButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                restartGame(dialog);
+            }
+        });
+
+        Button closeGameButton = new Button("EXIT");
+        closeGameButton.setLayoutY(150);
+        closeGameButton.setLayoutX(150);
+        closeGameButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                exitGame();
+            }
+        });
+
+        StackPane layout = new StackPane();
+        layout.getChildren().add(dialogVbox);
+        layout.getChildren().add(restartButton);
+        layout.getChildren().add(closeGameButton);
+
+        Scene dialogScene = new Scene(layout, 300, 200);
+        dialog.setScene(dialogScene);
+        dialog.show();
     }
 
-    public Game() {
+    private void restartGame(Stage dialogStage) {
+        List<Card> allCards = new ArrayList<>();
+
+        for (Pile pile : foundationPiles) {
+            ObservableList<Card> pileCards = pile.getCards();
+            for (Card card : pileCards) {
+                allCards.add(card);
+            }
+        }
+
+        Collections.shuffle(allCards);
+
+        for(Card card : allCards) {
+            card.moveToPile(stockPile);
+            card.flip();
+        }
+
+        deck = Card.createNewDeck();
+        dealCards();
+
+        victoryCounter = 0;
+        dialogStage.close();
+    }
+
+    private void exitGame() {
+        Platform.exit();
+    }
+
+    
+
+    public boolean isGameWon() {
+        return victoryCounter == 3;
+    }
+
+    public Game(Stage primaryStage) {
         deck = Card.createNewDeck();
         initPiles();
         dealCards();
+        stage = primaryStage;
     }
 
     public void addMouseEventHandlers(Card card) {
@@ -247,7 +328,7 @@ public class Game extends Pane {
 
         discardPile = new Pile(Pile.PileType.DISCARD, "Discard", STOCK_GAP);
         discardPile.setBlurredBackground();
-        discardPile.setLayoutX(285);
+        discardPile.setLayoutX(290);
         discardPile.setLayoutY(20);
         getChildren().add(discardPile);
 
