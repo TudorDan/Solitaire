@@ -232,7 +232,7 @@ public class Game extends Pane {
     
 
     public boolean isGameWon() {
-        return victoryCounter == 3;
+        return victoryCounter == 52;
     }
 
     public Game(Stage primaryStage) {
@@ -344,7 +344,7 @@ public class Game extends Pane {
             Pile tableauPile = new Pile(Pile.PileType.TABLEAU, "Tableau " + i, TABLEAU_GAP);
             tableauPile.setBlurredBackground();
             tableauPile.setLayoutX(95 + i * 180);
-            tableauPile.setLayoutY(275);
+            tableauPile.setLayoutY(290);
             tableauPiles.add(tableauPile);
             getChildren().add(tableauPile);
         }
