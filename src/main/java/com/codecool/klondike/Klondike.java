@@ -15,7 +15,7 @@ public class Klondike extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws InterruptedException {
         Card.loadCardImages();
         Game game = new Game(primaryStage);
         game.setTableBackground(new Image("/table/green.png"));

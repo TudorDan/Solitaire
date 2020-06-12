@@ -68,7 +68,7 @@ public class Card extends ImageView {
         Pile source = card.getContainingPile();
         source.removeCard(card);
         destPile.addCard(card);
-        System.out.println("Aici");
+        System.out.println(this + " moved to pile " + destPile.getPileType());
 
         if (!source.isEmpty() && source.getTopCard().isFaceDown() && source.getPileType() == Pile.PileType.TABLEAU) {
             source.getTopCard().flip();

@@ -17,10 +17,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class Game extends Pane {
 
@@ -232,14 +229,17 @@ public class Game extends Pane {
     
 
     public boolean isGameWon() {
-        return victoryCounter == 3;
+        return victoryCounter == 52;
     }
 
-    public Game(Stage primaryStage) {
+    public Game(Stage primaryStage) throws InterruptedException {
         deck = Card.createNewDeck();
         initPiles();
         dealCards();
         stage = primaryStage;
+
+//      Automatic game completion TEST
+//        startGameAutocompletion();
     }
 
     public void addMouseEventHandlers(Card card) {
@@ -380,4 +380,105 @@ public class Game extends Pane {
                 BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
     }
 
+//  Testing
+    private void startGameAutocompletion() throws InterruptedException {
+        boolean deadend = false;
+        while (!isGameWon() && !deadend) {
+            System.out.println(victoryCounter);
+            for (Pile tableauPile : tableauPiles) {
+                ObservableList<Card> pileCards = tableauPile.getCards();
+                List<Card> faceUpPileCards = new ArrayList<>();
+
+                for (Card card : pileCards) {
+                    if (!card.isFaceDown()) {
+                        faceUpPileCards.add(card);
+                    }
+                }
+
+                for (Card faceUpCard : faceUpPileCards) {
+                    for (Pile tPile : tableauPiles) {
+                        if (isMoveValid(faceUpCard, tPile) && tPile != tableauPile) {
+                            draggedCards = FXCollections.observableArrayList();
+                            int indexOfCard = tableauPile.getIndexOfCard(faceUpCard);
+                            for (int i = indexOfCard; i < tableauPile.numOfCards(); i++) {
+                                draggedCards.add(tableauPile.getCard(i));
+                            }
+
+                            for (Card draggedCard : draggedCards) {
+                                if (draggedCard != null) {
+                                    draggedCard.moveToPile(tPile);
+                                    Thread.sleep(500);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Card topCard = tableauPile.getTopCard();
+                if (topCard != null) {
+                    for (Pile fPile : foundationPiles) {
+                        if (isMoveValid(topCard, fPile)) {
+                            topCard.moveToPile(fPile);
+                            victoryCounter++;
+                            if (isGameWon()) {
+                                return;
+                            }
+                            Thread.sleep(500);
+                        }
+                    }
+                }
+            }
+
+            Card stockPileTopCard = stockPile.getTopCard();
+            try {
+                stockPileTopCard.moveToPile(discardPile);
+                stockPileTopCard.flip();
+            } catch (NullPointerException e) {
+                ObservableList<Card> discardPileCards = discardPile.getCards();
+                System.out.println("Stock Pile Empty");
+                try {
+                    for (Card card : discardPileCards) {
+                        card.flip();
+                        card.moveToPile(stockPile);
+                        Thread.sleep(500);
+                    }
+                } catch (ConcurrentModificationException exception) {
+                    System.out.println("Error in refilling Stock Pile from Discard Pile");
+                }
+            }
+            boolean movedStockPileTopCard = false;
+            try {
+                for (Pile fPile : foundationPiles) {
+                    if (isMoveValid(stockPileTopCard, fPile)) {
+                        stockPileTopCard.moveToPile(fPile);
+                        movedStockPileTopCard = true;
+                        Thread.sleep(500);
+                        victoryCounter++;
+                        if (isGameWon()) {
+                            return;
+                        }
+                    }
+                }
+            } catch (NullPointerException exception) {
+                System.out.println("Stock Pile top card is null");
+            }
+
+            if (!movedStockPileTopCard) {
+                for (Pile tPile : tableauPiles) {
+                    try {
+                        if (isMoveValid(stockPileTopCard, tPile)) {
+                            stockPileTopCard.moveToPile(tPile);
+                            Thread.sleep(500);
+
+                        }
+                    } catch (NullPointerException exception) {
+                        System.out.println("Stock Pile top card is null");
+                    }
+                }
+            }
+
+
+//            deadend = true;
+        }
+    }
 }
