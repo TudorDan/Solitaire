@@ -6,6 +6,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -168,11 +169,9 @@ public class Game extends Pane {
         dialog.initOwner(stage);
 
         VBox dialogVbox = new VBox(20);
-        dialogVbox.getChildren().add(new Text("YOU WON THE GAME!"));
+        dialogVbox.getChildren().add(new Text("CONGRATULATIONS!"));
 
-        Button restartButton = new Button("RESTART");
-        restartButton.setLayoutY(100);
-        restartButton.setLayoutX(100);
+        Button restartButton = new Button("PLAY AGAIN");
         restartButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -182,8 +181,6 @@ public class Game extends Pane {
         });
 
         Button closeGameButton = new Button("EXIT");
-        closeGameButton.setLayoutY(150);
-        closeGameButton.setLayoutX(150);
         closeGameButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -195,6 +192,10 @@ public class Game extends Pane {
         layout.getChildren().add(dialogVbox);
         layout.getChildren().add(restartButton);
         layout.getChildren().add(closeGameButton);
+
+        layout.setAlignment(dialogVbox, Pos.TOP_CENTER);
+        layout.setAlignment(restartButton, Pos.CENTER_LEFT);
+        layout.setAlignment(closeGameButton, Pos.CENTER_RIGHT);
 
         Scene dialogScene = new Scene(layout, 300, 200);
         dialog.setScene(dialogScene);
