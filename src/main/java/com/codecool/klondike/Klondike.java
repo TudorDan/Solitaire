@@ -1,11 +1,16 @@
 package com.codecool.klondike;
 
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 public class Klondike extends Application {
@@ -31,6 +36,12 @@ public class Klondike extends Application {
         menuBar.prefWidthProperty().bind(primaryStage.widthProperty());
 
         Menu menuGame = new Menu("Game");
+
+        MenuItem undo = new MenuItem("Undo");
+        undo.setOnAction(e -> {
+            game.undoCommand();
+        });
+
         MenuItem restart = new MenuItem("Restart");
         restart.setOnAction(e -> {
             game.restartGame();
@@ -39,6 +50,8 @@ public class Klondike extends Application {
         exit.setOnAction(e -> {
             game.exitGame();
         });
+
+        menuGame.getItems().add(undo);
         menuGame.getItems().add(restart);
         menuGame.getItems().add(exit);
 
@@ -117,6 +130,19 @@ public class Klondike extends Application {
         menuBar.getMenus().add(cardBacks);
 
         game.getChildren().add(menuBar);
+
+
+        final KeyCombination keyCombinationShiftC = new KeyCodeCombination(
+                KeyCode.Z, KeyCombination.CONTROL_DOWN);
+
+        primaryStage.getScene().setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if (keyCombinationShiftC.match(event)) {
+                    game.undoCommand();
+                }
+            }
+        });
     }
 
 }
