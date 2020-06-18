@@ -243,8 +243,6 @@ public class Game extends Pane {
         Platform.exit();
     }
 
-    
-
     public boolean isGameWon() {
         return victoryCounter == 52;
     }
