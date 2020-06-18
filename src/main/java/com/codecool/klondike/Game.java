@@ -202,6 +202,17 @@ public class Game extends Pane {
     }
 
     void restartGame(){
+        List<Card> allCards = getAllCards();
+        for (Card card : allCards) {
+            getChildren().remove(card);
+        }
+        deck = Card.createNewDeck();
+        dealCards();
+        victoryCounter = 0;
+    }
+
+    public List<Card> getAllCards() {
+        List<Card> allCards = new ArrayList<>();
         List<Pile> allPiles = Stream.concat(foundationPiles.stream(), tableauPiles.stream()).collect(Collectors.toList());
         allPiles.add(stockPile);
         allPiles.add(discardPile);
@@ -209,13 +220,11 @@ public class Game extends Pane {
         for (Pile pile : allPiles) {
             ObservableList<Card> cards = pile.getCards();
             for (Card card : cards) {
-                getChildren().remove(card);
+                allCards.add(card);
             }
         }
 
-        deck = Card.createNewDeck();
-        dealCards();
-        victoryCounter = 0;
+        return allCards;
     }
 
     void exitGame() {
@@ -374,6 +383,13 @@ public class Game extends Pane {
         setBackground(new Background(new BackgroundImage(tableBackground,
                 BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT,
                 BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
+    }
+
+    public void setCardBacks(String imageURL) {
+        List<Card> allCards = getAllCards();
+        for (Card card : allCards) {
+            card.setCardBack(imageURL);
+        }
     }
 
 //  Testing

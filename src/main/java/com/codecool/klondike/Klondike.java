@@ -21,7 +21,7 @@ public class Klondike extends Application {
     public void start(Stage primaryStage) throws InterruptedException {
         Card.loadCardImages();
         Game game = new Game(primaryStage);
-        game.setTableBackground(new Image("/table/red.jpg"));
+        game.setTableBackground(new Image("/table/green.jpg"));
 
         primaryStage.setTitle("Klondike Solitaire");
         primaryStage.setScene(new Scene(game, WINDOW_WIDTH, WINDOW_HEIGHT));
@@ -73,8 +73,47 @@ public class Klondike extends Application {
         backgroundMenu.getItems().add(red);
         backgroundMenu.getItems().add(wood);
 
+        Menu cardBacks = new Menu("Card Backs");
+        MenuItem classic = new MenuItem("Classic");
+        classic.setOnAction(e -> {
+            game.setCardBacks("/card_images/classic.jpg");
+        });
+        MenuItem redBack = new MenuItem("Red");
+        redBack.setOnAction(e -> {
+            game.setCardBacks("/card_images/card_back.png");
+        });
+        MenuItem blackWhite = new MenuItem("Black & White");
+        blackWhite.setOnAction(e -> {
+            game.setCardBacks("/card_images/black_white.png");
+        });
+        MenuItem fantasy = new MenuItem("Fantasy");
+        fantasy.setOnAction(e -> {
+            game.setCardBacks("/card_images/fantasy.jpg");
+        });
+        MenuItem gorilla = new MenuItem("Gorilla");
+        gorilla.setOnAction(e -> {
+            game.setCardBacks("/card_images/gorilla.png");
+        });
+        MenuItem nouveau = new MenuItem("Nouveau Bourgogne");
+        nouveau.setOnAction(e -> {
+            game.setCardBacks("/card_images/nouveau_bourgogne.png");
+        });
+        MenuItem prototype = new MenuItem("Prototype");
+        prototype.setOnAction(e -> {
+            game.setCardBacks("/card_images/prototype.jpg");
+        });
+
+        cardBacks.getItems().add(classic);
+        cardBacks.getItems().add(redBack);
+        cardBacks.getItems().add(blackWhite);
+        cardBacks.getItems().add(fantasy);
+        cardBacks.getItems().add(gorilla);
+        cardBacks.getItems().add(nouveau);
+        cardBacks.getItems().add(prototype);
+
         menuBar.getMenus().add(menuGame);
         menuBar.getMenus().add(backgroundMenu);
+        menuBar.getMenus().add(cardBacks);
 
         game.getChildren().add(menuBar);
     }

@@ -34,6 +34,12 @@ public class Card extends ImageView {
         setEffect(dropShadow);
     }
 
+    public void setCardBack (String imageURL) {
+        System.out.println(imageURL);
+        Image cardBack = new Image(imageURL);
+        setImage(faceDown ? cardBack : frontFace);
+    }
+
     public Suit getSuit() {
         return suit;
     }
