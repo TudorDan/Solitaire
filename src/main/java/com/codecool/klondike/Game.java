@@ -202,20 +202,31 @@ public class Game extends Pane {
     }
 
     void restartGame(){
+        getChildren().remove(discardPile);
         List<Card> allCards = getAllCards();
+        List<Pile> allPiles = getAllPiles();
         for (Card card : allCards) {
             getChildren().remove(card);
         }
-        deck = Card.createNewDeck();
-        dealCards();
-        victoryCounter = 0;
+        for (Pile pile : allPiles) {
+            getChildren().remove(pile);
+        }
+
+
+        Klondike main = new Klondike();
+        main.start(stage);
+    }
+
+    public List<Pile> getAllPiles() {
+        List<Pile> allPiles = Stream.concat(foundationPiles.stream(), tableauPiles.stream()).collect(Collectors.toList());
+        allPiles.add(stockPile);
+        allPiles.add(discardPile);
+        return allPiles;
     }
 
     public List<Card> getAllCards() {
         List<Card> allCards = new ArrayList<>();
-        List<Pile> allPiles = Stream.concat(foundationPiles.stream(), tableauPiles.stream()).collect(Collectors.toList());
-        allPiles.add(stockPile);
-        allPiles.add(discardPile);
+        List<Pile> allPiles = getAllPiles();
 
         for (Pile pile : allPiles) {
             ObservableList<Card> cards = pile.getCards();
