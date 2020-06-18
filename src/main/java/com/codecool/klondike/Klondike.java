@@ -28,6 +28,7 @@ public class Klondike extends Application {
         primaryStage.show();
 
         MenuBar menuBar = new MenuBar();
+        menuBar.prefWidthProperty().bind(primaryStage.widthProperty());
 
         Menu menuGame = new Menu("Game");
         MenuItem restart = new MenuItem("Restart");
