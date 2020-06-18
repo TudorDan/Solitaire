@@ -2,12 +2,10 @@ package com.codecool.klondike;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 public class Klondike extends Application {
@@ -33,7 +31,13 @@ public class Klondike extends Application {
 
         Menu menuGame = new Menu("Game");
         MenuItem restart = new MenuItem("Restart");
+        restart.setOnAction(e -> {
+            game.restartGame();
+        });
         MenuItem exit = new MenuItem("Exit");
+        exit.setOnAction(e -> {
+            game.exitGame();
+        });
         menuGame.getItems().add(restart);
         menuGame.getItems().add(exit);
 

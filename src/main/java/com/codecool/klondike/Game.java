@@ -18,6 +18,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Game extends Pane {
 
@@ -174,7 +176,8 @@ public class Game extends Pane {
         restartButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                restartGame(dialog);
+                restartGame();
+                dialog.close();
             }
         });
 
@@ -198,31 +201,24 @@ public class Game extends Pane {
         dialog.show();
     }
 
-    private void restartGame(Stage dialogStage) {
-        List<Card> allCards = new ArrayList<>();
+    void restartGame(){
+        List<Pile> allPiles = Stream.concat(foundationPiles.stream(), tableauPiles.stream()).collect(Collectors.toList());
+        allPiles.add(stockPile);
+        allPiles.add(discardPile);
 
-        for (Pile pile : foundationPiles) {
-            ObservableList<Card> pileCards = pile.getCards();
-            for (Card card : pileCards) {
-                allCards.add(card);
+        for (Pile pile : allPiles) {
+            ObservableList<Card> cards = pile.getCards();
+            for (Card card : cards) {
+                getChildren().remove(card);
             }
-        }
-
-        Collections.shuffle(allCards);
-
-        for(Card card : allCards) {
-            card.moveToPile(stockPile);
-            card.flip();
         }
 
         deck = Card.createNewDeck();
         dealCards();
-
         victoryCounter = 0;
-        dialogStage.close();
     }
 
-    private void exitGame() {
+    void exitGame() {
         Platform.exit();
     }
 
@@ -232,7 +228,7 @@ public class Game extends Pane {
         return victoryCounter == 52;
     }
 
-    public Game(Stage primaryStage) throws InterruptedException {
+    public Game(Stage primaryStage) {
         deck = Card.createNewDeck();
         initPiles();
         dealCards();

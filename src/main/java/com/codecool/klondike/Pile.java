@@ -52,7 +52,9 @@ public class Pile extends Pane {
     }
 
     public void clear() {
-        //TODO
+        for (Card card : cards) {
+            removeCard(card);
+        }
     }
 
     public void addCard(Card card) {
