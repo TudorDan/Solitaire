@@ -34,6 +34,12 @@ public class Card extends ImageView {
         setEffect(dropShadow);
     }
 
+    public void setCardBack (String imageURL) {
+        System.out.println(imageURL);
+        Image cardBack = new Image(imageURL);
+        setImage(faceDown ? cardBack : frontFace);
+    }
+
     public Suit getSuit() {
         return suit;
     }
@@ -63,11 +69,11 @@ public class Card extends ImageView {
     }
 
     public void moveToPile(Pile destPile) {
-        //this.getContainingPile().getCards().remove(this);
         Card card = this;
         Pile source = card.getContainingPile();
         source.removeCard(card);
         destPile.addCard(card);
+        System.out.println(this + " moved to pile " + destPile.getPileType());
 
         if (!source.isEmpty() && source.getTopCard().isFaceDown() && source.getPileType() == Pile.PileType.TABLEAU) {
             source.getTopCard().flip();
